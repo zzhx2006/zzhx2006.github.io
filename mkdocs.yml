@@ -18,6 +18,7 @@ theme:
     - navigation.top
     - search.suggest
     - search.highlight
+    - content.code.copy
   font:
     text: stzhongsong
     code: inconsolata
@@ -68,6 +69,13 @@ extra:
 markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
 
 extra_javascript:
   - javascripts/mathjax.js
