@@ -1,82 +1,61 @@
-site_name: M81的网站
-repo_url: https://github.com/ZhangZhanhaoxiang/zhangzhanhaoxiang.github.io
-repo_name: zhangzhanhaoxiang.github.io
-edit_uri: edit/main/docs/
+site_name: M81 的个人网站
+site_description: 个人 GitHub Page 网站，记录零碎日常学习
+site_url: https://zzhx2006.github.io
+repo_url: https://github.com/zzhx2006/zzhx2006.github.io
+repo_name: zzhx2006.github.io
 
 theme:
   name: material
   language: zh
-  logo: assets/my-logo_64x64.ico
-  favicon: assets/my-logo_32x32.ico
-  icon:
-    repo: simple/github
-    edit: material/pencil 
-    view: material/eye
+  logo: assets/my-logo.png
+  favicon: assets/my-logo.png
   features:
-    - content.code.copy
+    - navigation.indexes
     - navigation.instant
-    - navigation.instant.progress
-    - navigation.tracking
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.sections
-    - navigation.expand
-    - navigation.indexes
-    - toc.follow
+    - navigation.top
     - search.suggest
     - search.highlight
-    - content.action.edit
-    - content.action.view
-    - navigation.footer
-    - header.autohide
-
+  font:
+    text: stzhongsong
+    code: inconsolata
   palette:
-    - primary: white
-    - accent: pink
-    # Palette toggle for light mode
-    - scheme: default
-      toggle:
-        icon: material/weather-night
-        name: 切换到深色模式
-
-    # Palette toggle for dark mode
-    - scheme: slate
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: blue
       toggle:
         icon: material/weather-sunny
+        name: 切换到深色模式
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: blue
+      toggle:
+        icon: material/weather-night
         name: 切换到浅色模式
 
-  font:
-    text: Roboto
- 
-markdown_extensions:
-  - toc:
-      permalink: true
-  - pymdownx.details
-  - pymdownx.highlight:
-      use_pygments: true
-      pygments_lang_class: true
-      auto_title: true
-      linenums: true
-      line_spans: __span
-  - pymdownx.superfences
-  - pymdownx.keys
-  - pymdownx.smartsymbols
-  - pymdownx.snippets
-  - pymdownx.tabbed:
-      alternate_style: true
-  - pymdownx.arithmatex:
-      generic: true
+nav:
+  - 主页: index.md
+  - 博客:
+      - blog/index.md
 
-
-
+plugins:
+  - search
+  - blog:
+      blog_toc: true
+      archive_date_format: yyyy 年 MM 月
+      archive_url_date_format: yyyy/MM
+      archive_url_format: "{date}"
 extra:
-  homepage: https://zhangzhanhaoxiang.github.io
   social:
     - icon: simple/github
-      link: https://github.com/ZhangZhanhaoxiang
+      link: https://github.com/zzhx2006
     - icon: material/email
-      link: mailto:zzhx13842727578@126.com
-      name: 126.com
+      link: mailto:zzhx2006@outlook.com
+      name: outlook.com
     - icon: simple/bilibili
       link: https://space.bilibili.com/1805605010
     - icon: fontawesome/brands/weibo
@@ -86,15 +65,13 @@ extra:
     - icon: material/arch
       link: https://wiki.archlinuxcn.org/wiki/User:Messier81
 
-plugins:
-  - blog:
-      blog_dir: blog
-      archive_date_format: yyyy MMMM
-      post_date_format: full
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
 
 extra_javascript:
   - javascripts/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 
 copyright: Copyright &copy; 2024 Zhanhaoxiang Zhang

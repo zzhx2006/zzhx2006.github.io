@@ -13,8 +13,3 @@
 ```title="GPG 公钥指纹"
 C08E 7FD6 4C0C 5F61 F774  BAF9 D0B6 EE80 A7BE 2387
 ```
-
-#### 旧页面链接
-
-本人的自我简介及更多联系方式见此链接：[index-old.html](index-old.html)
-
