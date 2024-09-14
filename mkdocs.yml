@@ -7,8 +7,8 @@ repo_name: zzhx2006.github.io
 theme:
   name: material
   language: zh
-  logo: assets/my-logo.png
-  favicon: assets/my-logo.png
+  logo: assets/logo/my-logo.png
+  favicon: assets/logo/my-logo.png
   features:
     - navigation.indexes
     - navigation.instant
@@ -21,7 +21,7 @@ theme:
     - content.code.copy
   font:
     text: stzhongsong
-    code: inconsolata
+    code: Roboto Mono
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
