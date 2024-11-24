@@ -51,6 +51,7 @@ plugins:
       archive_date_format: yyyy 年 MM 月
       archive_url_date_format: yyyy/MM
       archive_url_format: "{date}"
+      post_url_date_format: yyyy/MM
 extra:
   social:
     - icon: simple/github
