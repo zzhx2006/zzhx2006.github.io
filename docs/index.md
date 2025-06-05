@@ -7,7 +7,7 @@
 
 ## 关于本站
 
-详见[关于](about)。
+详见[关于](about/index.md)。
 
 ## GPG 公钥
 
