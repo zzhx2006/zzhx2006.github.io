@@ -20,7 +20,7 @@
 ## 联系方式
 
 - E-mail: [zzhx2006@outlook.com](mailto:zzhx2006@outlook.com)
-- QQ: 2219658012
+- QQ: 2219658023
 - GitHub: [zzhx2006](https://github.com/zzhx2006)
 - Bilibili: [梅西耶81](https://space.bilibili.com/1805605010)
 - 知乎: [梅西耶81](https://space.bilibili.com/1805605010)

@@ -21,23 +21,23 @@ theme:
     - content.code.copy # 代码块右上角的复制按钮
     # - content.code.annotate # 一个“+”的代码注释
   font:
-    text: "Latin Modern Roman\",\"Times New Roman\",\"Libre Baskerville\",\"stzhongsong\",\"NSimSun\",\"Noto Serif SC\",\"serif"
-    code: "JetBrains Mono\",\"NSimSun\",\"Noto Serif SC\",\"monospace"
+    text: "Segoe UI\",\"SimHei\",\"Noto Sans SC\",\"sans-serif"
+    code: "JetBrains Mono\",\"Roboto Mono\",\"NSimSun\",\"monospace"
   palette:
-    - media: "(prefers-color-scheme: light)"
+    # - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: white
       accent: blue
-      toggle:
-        icon: material/weather-sunny
-        name: 切换到深色模式
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: black
-      accent: blue
-      toggle:
-        icon: material/weather-night
-        name: 切换到浅色模式
+    #   toggle:
+    #     icon: material/weather-sunny
+    #     name: 切换到深色模式
+    # - media: "(prefers-color-scheme: dark)"
+    #   scheme: slate
+    #   primary: black
+    #   accent: blue
+    #   toggle:
+    #     icon: material/weather-night
+    #     name: 切换到浅色模式
 
 nav:
   - 主页: index.md
@@ -54,6 +54,7 @@ plugins:
       archive_url_date_format: yyyy/MM
       archive_url_format: "{date}"
       post_url_date_format: yyyy/MM
+      post_readtime: false
 extra:
   social:
     - icon: simple/github
@@ -85,5 +86,8 @@ extra_javascript:
   - javascripts/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - stylesheets/extra.css
 
 copyright: Copyright &copy; 2024-2025 Zhanhaoxiang Zhang
