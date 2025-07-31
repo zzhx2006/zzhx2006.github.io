@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="{{ site.Language.LanguageCode }}" dir="{{ or site.Language.LanguageDirection `ltr` }}">
+
+<head>
+    {{ partial "head.html" . }}
+</head>
+
+<body>
+    <button class="menu-toggle" aria-label="Toggle menu">☰</button>
+    <div class="container">
+        <aside class="left-sidebar">
+            <div class="header">
+                {{ partial "header.html" . }}
+            </div>
+        </aside>
+        <main class="main-content">
+            {{ block "main" . }}{{ end }}
+        </main>
+    </div>
+    <button id="back-to-top" class="back-to-top" title="Back to the top of the page">↑</button>
+    <footer>
+        {{ partial "footer.html" . }}
+    </footer>
+</body>
+
+</html>

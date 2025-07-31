@@ -1,0 +1,6 @@
+.frontmatter/
+.vscode/
+public/*
+themes/
+.hugo_build.lock
+frontmatter.json

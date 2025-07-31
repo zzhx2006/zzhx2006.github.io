@@ -1,0 +1,39 @@
+{{ define "main" }}
+<h1 class="bigtitle">{{ .Title }}</h1>
+{{ .Content }}
+
+<section>
+
+    {{ range site.RegularPages }}
+
+    <article class="recent_post">
+
+        <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
+
+        <div class="post_meta_on_list">
+            {{ partial "time.html" . }}
+            {{ partial "terms.html" (dict "taxonomy" "tags"
+            "page" .) }}
+        </div>
+
+        <hr class="bold_hr">
+
+
+        <summary>
+            <div class="post_summary md_content">
+                {{ .Summary }}
+            </div>
+            {{ if .Truncated }}
+            <a href="{{ .RelPermalink }}" class="readmore" title="Read More">[...]</a>
+            {{ end }}
+        </summary>
+
+
+
+    </article>
+
+    {{ end }}
+
+</section>
+
+{{ end }}

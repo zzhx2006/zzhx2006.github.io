@@ -1,0 +1,25 @@
+{{ define "main" }}
+<button id="back-button" class="back-button" title="Go back to the previous page">←</button>
+<h1 class="bigtitle">{{ .Title }}</h1>
+
+
+
+<div class="post_meta">
+    {{ partial "time.html" . }}
+    {{ partial "terms.html" (dict "taxonomy" "tags"
+    "page" .) }}
+</div>
+
+<hr class="bold_hr post_hr">
+
+<section class="fullarticle">
+    <article class="md_content">
+
+        {{ .Content }}
+
+    </article>
+</section>
+
+
+
+{{ end }}

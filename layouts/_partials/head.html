@@ -1,0 +1,12 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="Zhanhaoxiang Zhang">
+<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s | %s" .Title site.Title }}{{ end }}</title>
+<link rel="canonical" href="{{ .Permalink }}" />
+<meta name="generator" content="hugo-0.148.1">
+<link rel="icon" href="/avatar/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/avatar/favicon-128x128.png" type="image/png">
+{{ partialCached "head/css.html" . }}
+{{ $js := resources.Get "js/main.js" }}
+<script src="{{ $js.RelPermalink }}"></script>
+{{ partial "schema.html" . }}
