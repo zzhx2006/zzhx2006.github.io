@@ -1,0 +1,41 @@
+:root,
+[data-md-color-scheme=default] {
+    --md-default-fg-color: #000000;
+    --md-default-fg-color--light: #000000;
+    --md-default-fg-color--lighter: #0000008a;
+    --md-default-fg-color--lightest: #00000052;
+    --md-code-fg-color: #000;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+    font-family: "Segoe UI", "SimHei", "sans-serif";
+    font-weight: bold;
+}
+
+.md-content__inner>p,
+.md-post__content>p {
+    text-indent: 2em;
+}
+
+.md-content__inner>p:has(> img),
+.md-post__content>p:has(> img) {
+    text-indent: 0;
+}
+
+.md-tabs *,
+.md-sidebar *,
+.md-footer * {
+    font-family: "Segoe UI", "SimHei", "sans-serif";
+}
+
+.md-typeset {
+    line-height: 1.6;
+}
+
+p {
+    margin-block-start: 0.5em;
+    margin-block-end: 0.5em;
+}

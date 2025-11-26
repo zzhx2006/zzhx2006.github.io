@@ -1,0 +1,1798 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="C++ projects, computer science insights, and amateur radio adventures by a CS undergraduate.">
+      
+      
+      
+        <link rel="canonical" href="https://zzhx2006.github.io/blog/core-linux-socket-api-usage-explained/">
+      
+      
+        <link rel="prev" href="../cpp-variadic-templates-recursive-inheritance-minimal-tuple/">
+      
+      
+        <link rel="next" href="../translation-of-value-categories-in-cpp-standard/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/messier81.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>核心 Linux Socket API 用法释义 - M81's Website</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Times+New+Roman","SimSun","Noto+Sans+SC","serif:300,300i,400,400i,700,700i%7CGoogle+Sans+Code","JetBrains+Mono","Consolas","NSimSun","monospace:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Times New Roman","SimSun","Noto Sans SC","serif";--md-code-font:"Google Sans Code","JetBrains Mono","Consolas","NSimSun","monospace"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#1-socket" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="M81&#39;s Website" class="md-header__button md-logo" aria-label="M81's Website" data-md-component="logo">
+      
+  <img src="../../assets/messier81.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            M81's Website
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              核心 Linux Socket API 用法释义
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 2c-1.05 0-2.05.16-3 .46 4.06 1.27 7 5.04 7 9.54s-2.94 8.27-7 9.54c.95.3 1.95.46 3 .46a10 10 0 0 0 10-10A10 10 0 0 0 9 2"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/zzhx2006" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    zzhx2006
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Blogs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../about/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  About
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="M81&#39;s Website" class="md-nav__button md-logo" aria-label="M81's Website" data-md-component="logo">
+      
+  <img src="../../assets/messier81.png" alt="logo">
+
+    </a>
+    M81's Website
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/zzhx2006" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    zzhx2006
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Blogs
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Blogs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025/11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2025/11
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025/06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2025/06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025/03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2025/03
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../2024/11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2024/11
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../2024/10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2024/10
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../2024/09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2024/09
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../about/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-socket" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. socket()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-bind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. bind()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-listen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. listen()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-accept" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. accept()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. connect()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-send" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. send()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-recv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. recv()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-sendto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. sendto()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-recvfrom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. recvfrom()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-sendmsg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. sendmsg()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-recvmsg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. recvmsg()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. close()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-shutdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. shutdown()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-setsockopt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. setsockopt()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-getsockopt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. getsockopt()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-getsockname" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. getsockname()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#17-getpeername" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17. getpeername()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#18-ioctl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        18. ioctl()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#19-fcntl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        19. fcntl()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#20-select" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20. select()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#21-poll" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        21. poll()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#22-epoll_create" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22. epoll_create()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#23-epoll_ctl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        23. epoll_ctl()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#24-epoll_wait" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        24. epoll_wait()
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+                  <span class="md-ellipsis">
+                    Back to index
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    Metadata
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5z"/></svg>
+                        <time datetime="2025-03-05 00:00:00+00:00" class="md-ellipsis">March 5, 2025</time>
+                      </div>
+                    </li>
+                    
+                    
+                    
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+            
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+
+
+
+  
+  
+
+
+  <h1>核心 Linux Socket API 用法释义</h1>
+
+<h3 id="1-socket">1. socket()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">socket</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">协议族</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">套接字类型</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">协议</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：创建一个新的套接字，返回一个文件描述符用于后续网络通信.  </p>
+<p><strong>第 1 个参数 🔑</strong>：协议族，指定通信协议类型.<br />
+- 示例：<code>AF_INET</code>（IPv4协议）、<code>AF_INET6</code>（IPv6协议）、<code>AF_UNIX</code>（本地进程间通信）. </p>
+<!-- more -->
+
+<p><strong>第 2 个参数 🔑</strong>：套接字类型，指定通信语义. </p>
+<ul>
+<li>示例：<code>SOCK_STREAM</code>（TCP流式套接字）、<code>SOCK_DGRAM</code>（UDP数据报套接字）. </li>
+</ul>
+<p><strong>第 3 个参数 🔑</strong>：具体协议，通常为0（使用默认协议）. </p>
+<ul>
+<li>示例：若类型是<code>SOCK_STREAM</code>，则默认协议是<code>IPPROTO_TCP</code>；若类型是<code>SOCK_DGRAM</code>，默认协议是<code>IPPROTO_UDP</code>. </li>
+</ul>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回非负整数（套接字文件描述符）. </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1，并设置<code>errno</code>（如<code>EACCES</code>权限不足、<code>EINVAL</code>参数无效）. </p>
+</li>
+</ul>
+<hr />
+<h3 id="2-bind">2. bind()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">bind</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">sockaddr</span><span class="w"> </span><span class="o">*</span><span class="n">地址</span><span class="p">,</span><span class="w"> </span><span class="kt">socklen_t</span><span class="w"> </span><span class="n">地址长度</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：将套接字与特定IP地址和端口绑定. </p>
+<p><strong>第 1 个参数 🔑</strong>：套接字描述符（通过<code>socket()</code>创建的文件描述符）. </p>
+<p><strong>第 2 个参数 🔑</strong>：地址（指向<code>sockaddr</code>结构的指针），包含IP和端口. </p>
+<ul>
+<li>示例：<code>struct sockaddr_in server_addr</code>（IPv4地址结构），需填充<code>sin_family</code>（<code>AF_INET</code>）、<code>sin_port</code>（<code>htons(8080)</code>）、<code>sin_addr</code>（<code>INADDR_ANY</code> 表示监听所有接口）. </li>
+</ul>
+<p><strong>第 3 个参数 🔑</strong>：地址长度（地址结构的大小）. </p>
+<ul>
+<li>示例：<code>sizeof(struct sockaddr_in)</code>. </li>
+</ul>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回0. </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如端口已被占用，<code>errno=EADDRINUSE</code>）. </p>
+</li>
+</ul>
+<hr />
+<h3 id="3-listen">3. listen()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">listen</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">积压连接数</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：将套接字设为监听模式，等待客户端连接请求. </p>
+<p><strong>第 1 个参数 🔑</strong>：套接字描述符（已绑定的套接字）. </p>
+<p><strong>第 2 个参数 🔑</strong>：积压连接数（等待队列的最大长度）. </p>
+<ul>
+<li>示例：5（表示最多允许5个未处理的连接请求）. </li>
+</ul>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回0. </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如套接字未绑定，<code>errno=EINVAL</code>）. </p>
+</li>
+</ul>
+<hr />
+<h3 id="4-accept">4. accept()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">accept</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">监听套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">sockaddr</span><span class="w"> </span><span class="o">*</span><span class="n">客户端地址</span><span class="p">,</span><span class="w"> </span><span class="kt">socklen_t</span><span class="w"> </span><span class="o">*</span><span class="n">客户端地址长度</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：接受客户端的连接请求，返回新的套接字用于通信. </p>
+<p><strong>第 1 个参数 🔑</strong>：监听套接字描述符（通过<code>listen()</code>设置的套接字）. </p>
+<p><strong>第 2 个参数 🔑</strong>：客户端地址（输出参数，保存客户端地址信息）. </p>
+<ul>
+<li>示例：<code>struct sockaddr_in client_addr</code>，调用后填充客户端IP和端口. </li>
+</ul>
+<p><strong>第 3 个参数 🔑</strong>：客户端地址长度（输入输出参数，传入地址结构大小，返回实际大小）. </p>
+<ul>
+<li>示例：<code>socklen_t len = sizeof(client_addr);</code></li>
+</ul>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回新的套接字描述符（用于与客户端通信）. </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如系统资源不足，<code>errno=ENOMEM</code>）. </p>
+</li>
+</ul>
+<hr />
+<h3 id="5-connect">5. connect()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">sockaddr</span><span class="w"> </span><span class="o">*</span><span class="n">服务器地址</span><span class="p">,</span><span class="w"> </span><span class="kt">socklen_t</span><span class="w"> </span><span class="n">地址长度</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：客户端主动连接服务器. </p>
+<p><strong>第 1 个参数 🔑</strong>：套接字描述符（客户端通过<code>socket()</code>创建的套接字）. </p>
+<p><strong>第 2 个参数 🔑</strong>：服务器地址（服务器的IP和端口）. </p>
+<ul>
+<li>示例：<code>struct sockaddr_in server_addr</code>，填充<code>sin_family=AF_INET</code>、<code>sin_port=htons(80)</code>、<code>sin_addr.s_addr=inet_addr("192.168.1.1")</code>. </li>
+</ul>
+<p><strong>第 3 个参数 🔑</strong>：地址长度（地址结构的大小）. </p>
+<ul>
+<li>示例：<code>sizeof(struct sockaddr_in)</code>. </li>
+</ul>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回0. </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如服务器不可达，<code>errno=ECONNREFUSED</code>）. </p>
+</li>
+</ul>
+<hr />
+<h3 id="6-send">6. send()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kt">ssize_t</span><span class="w"> </span><span class="nf">send</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">缓冲区</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">长度</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">标志</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：通过TCP套接字发送数据. </p>
+<p><strong>第 1 个参数 🔑</strong>：套接字描述符（已连接的套接字）. </p>
+<p><strong>第 2 个参数 🔑</strong>：缓冲区（发送数据的内存地址）. </p>
+<ul>
+<li>示例：<code>char *msg = "Hello";</code></li>
+</ul>
+<p><strong>第 3 个参数 🔑</strong>：长度（要发送的字节数）. </p>
+<ul>
+<li>示例：<code>strlen(msg)</code>. </li>
+</ul>
+<p><strong>第 4 个参数 🔑</strong>：标志（控制行为，通常为0）. </p>
+<ul>
+<li>示例：0（默认阻塞发送）. </li>
+</ul>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回实际发送的字节数. </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如连接断开，<code>errno=EPIPE</code>）. </p>
+</li>
+</ul>
+<hr />
+<h3 id="7-recv">7. recv()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kt">ssize_t</span><span class="w"> </span><span class="nf">recv</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">缓冲区</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">长度</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">标志</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：通过TCP套接字接收数据. </p>
+<p><strong>第 1 个参数 🔑</strong>：套接字描述符（已连接的套接字）. </p>
+<p><strong>第 2 个参数 🔑</strong>：缓冲区（接收数据的内存地址）. </p>
+<ul>
+<li>示例：<code>char buffer[1024];</code></li>
+</ul>
+<p><strong>第 3 个参数 🔑</strong>：长度（缓冲区最大容量）. </p>
+<ul>
+<li>示例：<code>sizeof(buffer)</code>. </li>
+</ul>
+<p><strong>第 4 个参数 🔑</strong>：标志（控制行为，通常为0）. </p>
+<ul>
+<li>示例：0（默认阻塞接收，直到有数据到达）.  </li>
+</ul>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回实际接收的字节数（若返回0，表示对端关闭连接）. </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如套接字无效，<code>errno=ENOTCONN</code>）. </p>
+</li>
+</ul>
+<hr />
+<h3 id="8-sendto">8. sendto()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kt">ssize_t</span><span class="w"> </span><span class="nf">sendto</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">缓冲区</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">长度</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">标志</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">sockaddr</span><span class="w"> </span><span class="o">*</span><span class="n">目标地址</span><span class="p">,</span><span class="w"> </span><span class="kt">socklen_t</span><span class="w"> </span><span class="n">地址长度</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：通过UDP套接字发送数据到指定地址. </p>
+<p><strong>第 1 个参数 🔑</strong>：套接字描述符（UDP套接字）. </p>
+<p><strong>第 2 个参数 🔑</strong>：缓冲区（发送数据的内存地址）. </p>
+<ul>
+<li>示例：<code>char *msg = "UDP Message";</code></li>
+</ul>
+<p><strong>第 3 个参数 🔑</strong>：长度（发送数据的字节数）. </p>
+<ul>
+<li>示例：<code>strlen(msg)</code>. </li>
+</ul>
+<p><strong>第 4 个参数 🔑</strong>：标志（通常为0）. </p>
+<p><strong>第 5 个参数 🔑</strong>：目标地址（目标IP和端口）. </p>
+<ul>
+<li>示例：<code>struct sockaddr_in server_addr</code>，填充服务器信息. </li>
+</ul>
+<p><strong>第 6 个参数 🔑</strong>：地址长度（目标地址结构的大小）. </p>
+<ul>
+<li>示例：<code>sizeof(struct sockaddr_in)</code>. </li>
+</ul>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回实际发送的字节数. </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如网络不可达，<code>errno=ENETUNREACH</code>）. </p>
+</li>
+</ul>
+<hr />
+<h3 id="9-recvfrom">9. recvfrom()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kt">ssize_t</span><span class="w"> </span><span class="nf">recvfrom</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">缓冲区</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">缓冲区长度</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">标志</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">sockaddr</span><span class="w"> </span><span class="o">*</span><span class="n">源地址</span><span class="p">,</span><span class="w"> </span><span class="kt">socklen_t</span><span class="w"> </span><span class="o">*</span><span class="n">地址长度</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：从套接字接收数据，支持获取发送方地址信息（常用于UDP）.</p>
+<p><strong>第 1 个参数 🔑</strong>：套接字描述符（已绑定的UDP或TCP套接字）.</p>
+<p><strong>第 2 个参数 🔑</strong>：接收缓冲区指针（存储接收到的数据）.</p>
+<p><strong>第 3 个参数 🔑</strong>：缓冲区最大容量（字节）.</p>
+<p><strong>第 4 个参数 🔑</strong>：接收标志（如<code>MSG_PEEK</code>预览数据、<code>MSG_WAITALL</code>等待完整数据）.</p>
+<p><strong>第 5 个参数 🔑</strong>：源地址（输出参数，保存发送方地址信息）.</p>
+<p><strong>第 6 个参数 🔑</strong>：地址长度（输入输出参数，传入地址结构大小，返回实际地址长度）.</p>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回实际接收的字节数.</p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如缓冲区不足，<code>errno=EINVAL</code>）.</p>
+</li>
+</ul>
+<hr />
+<h3 id="10-sendmsg">10. sendmsg()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kt">ssize_t</span><span class="w"> </span><span class="nf">sendmsg</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">msghdr</span><span class="w"> </span><span class="o">*</span><span class="n">消息结构</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">标志</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：发送复杂消息（支持多缓冲区和辅助数据，如文件描述符传递）.</p>
+<p><strong>第 1 个参数 🔑</strong>：套接字描述符（已连接的TCP或绑定的UDP套接字）.</p>
+<p><strong>第 2 个参数 🔑</strong>：消息结构指针（包含数据缓冲区、地址、控制信息）.</p>
+<p><strong>第 3 个参数 🔑</strong>：发送标志（如<code>MSG_DONTWAIT</code>非阻塞发送）.</p>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回实际发送的字节数.</p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如无效参数，<code>errno=EINVAL</code>）.</p>
+</li>
+</ul>
+<hr />
+<h3 id="11-recvmsg">11. recvmsg()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kt">ssize_t</span><span class="w"> </span><span class="nf">recvmsg</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">msghdr</span><span class="w"> </span><span class="o">*</span><span class="n">消息结构</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">标志</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：接收复杂消息（支持多缓冲区和辅助数据）.</p>
+<p><strong>第 1 个参数 🔑</strong>：套接字描述符.</p>
+<p><strong>第 2 个参数 🔑</strong>：消息结构指针（输出参数，存储接收的数据和控制信息）.</p>
+<p><strong>第 3 个参数 🔑</strong>：接收标志（如<code>MSG_TRUNC</code>返回完整数据长度即使截断）.</p>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回实际接收的字节数.</p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如套接字未连接，<code>errno=ENOTCONN</code>）.</p>
+</li>
+</ul>
+<hr />
+<h3 id="12-close">12. close()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">文件描述符</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：关闭套接字描述符，释放资源.</p>
+<p><strong>第 1 个参数 🔑</strong>：要关闭的套接字描述符.</p>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回0.</p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如无效描述符，<code>errno=EBADF</code>）.</p>
+</li>
+</ul>
+<hr />
+<h3 id="13-shutdown">13. shutdown()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">关闭方式</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：关闭套接字的读/写通道或全部通道.</p>
+<p><strong>第 1 个参数 🔑</strong>：套接字描述符.</p>
+<p><strong>第 2 个参数 🔑</strong>：关闭方式（<code>SHUT_RD</code>停读，<code>SHUT_WR</code>停写，<code>SHUT_RDWR</code>全停）.</p>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回0.</p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如无效方式，<code>errno=EINVAL</code>）.</p>
+</li>
+</ul>
+<hr />
+<h3 id="14-setsockopt">14. setsockopt()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">setsockopt</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">协议层</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">选项名</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">选项值</span><span class="p">,</span><span class="w"> </span><span class="kt">socklen_t</span><span class="w"> </span><span class="n">选项长度</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：设置套接字选项（如超时、重用地址）.</p>
+<p><strong>第 1 个参数 🔑</strong>：套接字描述符.</p>
+<p><strong>第 2 个参数 🔑</strong>：协议层（如<code>SOL_SOCKET</code>通用选项，<code>IPPROTO_TCP</code> TCP选项）.</p>
+<p><strong>第 3 个参数 🔑</strong>：选项名（如<code>SO_REUSEADDR</code>地址重用，<code>SO_RCVTIMEO</code>接收超时）.</p>
+<p><strong>第 4 个参数 🔑</strong>：选项值指针（如<code>int reuse = 1</code>）.</p>
+<p><strong>第 5 个参数 🔑</strong>：选项值长度（如<code>sizeof(reuse)</code>）.</p>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回0.</p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如无效选项，<code>errno=ENOPROTOOPT</code>）.</p>
+</li>
+</ul>
+<hr />
+<h3 id="15-getsockopt">15. getsockopt()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">getsockopt</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">协议层</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">选项名</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">选项值</span><span class="p">,</span><span class="w"> </span><span class="kt">socklen_t</span><span class="w"> </span><span class="o">*</span><span class="n">选项长度</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：获取套接字选项的当前值.</p>
+<p><strong>第 1 个参数 🔑</strong>：套接字描述符.</p>
+<p><strong>第 2 个参数 🔑</strong>：协议层（同<code>setsockopt</code>）.</p>
+<p><strong>第 3 个参数 🔑</strong>：选项名（如<code>SO_ERROR</code>获取错误状态）.</p>
+<p><strong>第 4 个参数 🔑</strong>：选项值指针（输出参数，存储选项值）.</p>
+<p><strong>第 5 个参数 🔑</strong>：选项长度（输入输出参数，传入指针大小，返回实际大小）.</p>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回0.</p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如无效选项，<code>errno=ENOPROTOOPT</code>）.</p>
+</li>
+</ul>
+<hr />
+<h3 id="16-getsockname">16. getsockname()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">getsockname</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">sockaddr</span><span class="w"> </span><span class="o">*</span><span class="n">地址</span><span class="p">,</span><span class="w"> </span><span class="kt">socklen_t</span><span class="w"> </span><span class="o">*</span><span class="n">地址长度</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：获取套接字绑定的本地地址.</p>
+<p><strong>第 1 个参数 🔑</strong>：套接字描述符.</p>
+<p><strong>第 2 个参数 🔑</strong>：地址结构指针（输出参数，保存本地IP和端口）.</p>
+<p><strong>第 3 个参数 🔑</strong>：地址长度（输入输出参数，传入结构大小，返回实际大小）.</p>
+<p><strong>返回值 📤</strong>：</p>
+<ul>
+<li>
+<p>✅ 成功时：返回0.</p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如未绑定地址，<code>errno=EINVAL</code>）.</p>
+</li>
+</ul>
+<hr />
+<h3 id="17-getpeername">17. getpeername()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">getpeername</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">套接字描述符</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">sockaddr</span><span class="w"> </span><span class="o">*</span><span class="n">地址结构</span><span class="p">,</span><span class="w"> </span><span class="kt">socklen_t</span><span class="w"> </span><span class="o">*</span><span class="n">地址长度</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：获取已连接套接字对端的地址信息.   </p>
+<p><strong>第 1 个参数 🔑</strong>：已连接的套接字描述符（如accept返回的描述符）.   </p>
+<p><strong>第 2 个参数 🔑</strong>：地址结构（输出参数，保存对端IP和端口）.   </p>
+<ul>
+<li>示例：<code>struct sockaddr_in peer_addr;</code>  </li>
+</ul>
+<p><strong>第 3 个参数 🔑</strong>：地址长度（输入输出参数，传入结构大小，返回实际大小）.   </p>
+<ul>
+<li>示例：<code>socklen_t len = sizeof(peer_addr);</code>  </li>
+</ul>
+<p><strong>返回值 📤</strong>：  </p>
+<ul>
+<li>
+<p>✅ 成功时：返回0.   </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如未连接套接字，<code>errno=ENOTCONN</code>）.   </p>
+</li>
+</ul>
+<hr />
+<h3 id="18-ioctl">18. ioctl()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">ioctl</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">文件描述符</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">请求码</span><span class="p">,</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="cm">/* 参数 */</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：对文件描述符执行设备输入/输出操作（常用于设置套接字选项）.   </p>
+<p><strong>第 1 个参数 🔑</strong>：文件描述符（如套接字描述符）.   </p>
+<p><strong>第 2 个参数 🔑</strong>：请求码（指定操作类型，如<code>FIONBIO</code>设置非阻塞模式）.   </p>
+<p><strong>第 3 个参数 🔑</strong>：可变参数（根据请求码传入参数，如<code>int *非阻塞标志</code>）.   </p>
+<ul>
+<li>示例：  </li>
+</ul>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kt">int</span><span class="w"> </span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="n">ioctl</span><span class="p">(</span><span class="n">sockfd</span><span class="p">,</span><span class="w"> </span><span class="n">FIONBIO</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">flags</span><span class="p">);</span><span class="w"> </span><span class="c1">// 设置非阻塞</span>
+</span></code></pre></div>
+<p><strong>返回值 📤</strong>：  </p>
+<ul>
+<li>
+<p>✅ 成功时：返回0.   </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如无效请求码，<code>errno=EINVAL</code>）.   </p>
+</li>
+</ul>
+<hr />
+<h3 id="19-fcntl">19. fcntl()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">fcntl</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">文件描述符</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">命令</span><span class="p">,</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="cm">/* 可选参数 */</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：对文件描述符执行控制操作（如设置非阻塞模式）.   </p>
+<p><strong>第 1 个参数 🔑</strong>：文件描述符（如套接字描述符）.   </p>
+<p><strong>第 2 个参数 🔑</strong>：命令（如<code>F_GETFL</code>获取标志，<code>F_SETFL</code>设置标志）.   </p>
+<p><strong>第 3 个参数 🔑</strong>：可选参数（如标志位<code>O_NONBLOCK</code>）.   </p>
+<ul>
+<li>示例：  </li>
+</ul>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="kt">int</span><span class="w"> </span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fcntl</span><span class="p">(</span><span class="n">sockfd</span><span class="p">,</span><span class="w"> </span><span class="n">F_GETFL</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="n">fcntl</span><span class="p">(</span><span class="n">sockfd</span><span class="p">,</span><span class="w"> </span><span class="n">F_SETFL</span><span class="p">,</span><span class="w"> </span><span class="n">flags</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">O_NONBLOCK</span><span class="p">);</span><span class="w"> </span><span class="c1">// 设置非阻塞</span>
+</span></code></pre></div>
+<p><strong>返回值 📤</strong>：  </p>
+<ul>
+<li>
+<p>✅ 成功时：返回依赖命令（如<code>F_GETFL</code>返回标志值）.   </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如无效命令，<code>errno=EINVAL</code>）.   </p>
+</li>
+</ul>
+<hr />
+<h3 id="20-select">20. select()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">最大描述符</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">fd_set</span><span class="w"> </span><span class="o">*</span><span class="n">读集合</span><span class="p">,</span><span class="w"> </span><span class="n">fd_set</span><span class="w"> </span><span class="o">*</span><span class="n">写集合</span><span class="p">,</span><span class="w"> </span><span class="n">fd_set</span><span class="w"> </span><span class="o">*</span><span class="n">异常集合</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">timeval</span><span class="w"> </span><span class="o">*</span><span class="n">超时时间</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：同步I/O多路复用，监控多个文件描述符状态.   </p>
+<p><strong>第 1 个参数 🔑</strong>：监控的最大文件描述符值+1（如<code>max_fd+1</code>）.   </p>
+<p><strong>第 2-4 个参数 🔑</strong>：读/写/异常集合（使用<code>FD_SET</code>宏设置，返回就绪的描述符）.   </p>
+<ul>
+<li>示例：  </li>
+</ul>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="n">fd_set</span><span class="w"> </span><span class="n">read_fds</span><span class="p">;</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="n">FD_ZERO</span><span class="p">(</span><span class="o">&amp;</span><span class="n">read_fds</span><span class="p">);</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="n">FD_SET</span><span class="p">(</span><span class="n">sockfd</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">read_fds</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>第 5 个参数 🔑</strong>：超时时间（<code>NULL</code>表示无限等待，<code>timeval</code>结构指定秒/微秒）.   </p>
+<p><strong>返回值 📤</strong>：  </p>
+<ul>
+<li>
+<p>✅ 成功时：返回就绪的描述符总数.   </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如中断，<code>errno=EINTR</code>）.   </p>
+</li>
+</ul>
+<hr />
+<h3 id="21-poll">21. poll()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">poll</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">pollfd</span><span class="w"> </span><span class="o">*</span><span class="n">文件描述符数组</span><span class="p">,</span><span class="w"> </span><span class="kt">nfds_t</span><span class="w"> </span><span class="n">文件描述符数量</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">超时时间</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：类似<code>select</code>，但使用数组结构管理描述符.   </p>
+<p><strong>第 1 个参数 🔑</strong>：<code>pollfd</code>结构数组（包含描述符、事件、返回事件）.   </p>
+<ul>
+<li>示例：  </li>
+</ul>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">pollfd</span><span class="w"> </span><span class="n">fds</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="n">fds</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sockfd</span><span class="p">;</span>
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="n">fds</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">events</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">POLLIN</span><span class="p">;</span>
+</span></code></pre></div>
+<p><strong>第 2 个参数 🔑</strong>：数组元素数量（如<code>sizeof(fds)/sizeof(fds[0])</code>）.   </p>
+<p><strong>第 3 个参数 🔑</strong>：超时时间（毫秒，-1表示无限等待）.   </p>
+<p><strong>返回值 📤</strong>：  </p>
+<ul>
+<li>
+<p>✅ 成功时：返回就绪的描述符数量.   </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如无效参数，<code>errno=EFAULT</code>）.   </p>
+</li>
+</ul>
+<hr />
+<h3 id="22-epoll_create">22. epoll_create()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">epoll_create</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">大小</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：创建epoll实例（内核事件表）.   </p>
+<p><strong>第 1 个参数 🔑</strong>：事件表大小（Linux 2.6.8+忽略此值，建议填0）.   </p>
+<p><strong>返回值 📤</strong>：  </p>
+<ul>
+<li>
+<p>✅ 成功时：返回epoll文件描述符.   </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如权限不足，<code>errno=EPERM</code>）.   </p>
+</li>
+</ul>
+<hr />
+<h3 id="23-epoll_ctl">23. epoll_ctl()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">epoll_ctl</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">epoll描述符</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">操作类型</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">目标描述符</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">epoll_event</span><span class="w"> </span><span class="o">*</span><span class="n">事件</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：注册/修改/删除epoll事件.   </p>
+<p><strong>第 1 个参数 🔑</strong>：epoll描述符（由<code>epoll_create</code>返回）.   </p>
+<p><strong>第 2 个参数 🔑</strong>：操作类型（<code>EPOLL_CTL_ADD</code>添加，<code>EPOLL_CTL_MOD</code>修改，<code>EPOLL_CTL_DEL</code>删除）.   </p>
+<p><strong>第 3 个参数 🔑</strong>：目标描述符（如套接字描述符）.   </p>
+<p><strong>第 4 个参数 🔑</strong>：事件结构（指定监听事件如<code>EPOLLIN</code>）.   </p>
+<ul>
+<li>示例：  </li>
+</ul>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">epoll_event</span><span class="w"> </span><span class="n">ev</span><span class="p">;</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="n">ev</span><span class="p">.</span><span class="n">events</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EPOLLIN</span><span class="p">;</span>
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="n">ev</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sockfd</span><span class="p">;</span>
+</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>
+</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="n">epoll_ctl</span><span class="p">(</span><span class="n">epfd</span><span class="p">,</span><span class="w"> </span><span class="n">EPOLL_CTL_ADD</span><span class="p">,</span><span class="w"> </span><span class="n">sockfd</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ev</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>返回值 📤</strong>：  </p>
+<ul>
+<li>
+<p>✅ 成功时：返回0.   </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如描述符已存在，<code>errno=EEXIST</code>）.   </p>
+</li>
+</ul>
+<hr />
+<h3 id="24-epoll_wait">24. epoll_wait()</h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">epoll_wait</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">epoll描述符</span><span class="p">,</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">epoll_event</span><span class="w"> </span><span class="o">*</span><span class="n">事件数组</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">最大事件数</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">超时时间</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>📖 解释</strong>：等待epoll事件就绪.   </p>
+<p><strong>第 1 个参数 🔑</strong>：epoll描述符（由<code>epoll_create</code>返回）.   </p>
+<p><strong>第 2 个参数 🔑</strong>：事件数组（保存就绪事件）.   </p>
+<ul>
+<li>示例：  </li>
+</ul>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">epoll_event</span><span class="w"> </span><span class="n">events</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="kt">int</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">epoll_wait</span><span class="p">(</span><span class="n">epfd</span><span class="p">,</span><span class="w"> </span><span class="n">events</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>第 3 个参数 🔑</strong>：最大事件数（如数组长度10）.   </p>
+<p><strong>第 4 个参数 🔑</strong>：超时时间（毫秒，-1表示无限等待）.   </p>
+<p><strong>返回值 📤</strong>：  </p>
+<ul>
+<li>
+<p>✅ 成功时：返回就绪事件数量.   </p>
+</li>
+<li>
+<p>❎ 失败时：返回-1（如中断，<code>errno=EINTR</code>）. </p>
+</li>
+</ul>
+<hr />
+<p>Generated by Qwen2.5-Max + QwQ-32B-Preview.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024-2025 Zhanhaoxiang Zhang
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/zzhx2006" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="mailto:zzhx2006@outlook.com" target="_blank" rel="noopener" title="outlook.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m20 8-8 5-8-5V6l8 5 8-5m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://space.bilibili.com/1805605010" target="_blank" rel="noopener" title="space.bilibili.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.813 4.653h.854q2.266.08 3.773 1.574Q23.946 7.72 24 9.987v7.36q-.054 2.266-1.56 3.773c-1.506 1.507-2.262 1.524-3.773 1.56H5.333q-2.266-.054-3.773-1.56C.053 19.614.036 18.858 0 17.347v-7.36q.054-2.267 1.56-3.76t3.773-1.574h.774l-1.174-1.12a1.23 1.23 0 0 1-.373-.906q0-.534.373-.907l.027-.027q.4-.373.92-.373t.92.373L9.653 4.44q.107.106.187.213h4.267a.8.8 0 0 1 .16-.213l2.853-2.747q.4-.373.92-.373c.347 0 .662.151.929.4s.391.551.391.907q0 .532-.373.906zM5.333 7.24q-1.12.027-1.88.773-.76.748-.786 1.894v7.52q.026 1.146.786 1.893t1.88.773h13.334q1.12-.026 1.88-.773t.786-1.893v-7.52q-.026-1.147-.786-1.894t-1.88-.773zM8 11.107q.56 0 .933.373.375.374.4.96v1.173q-.025.586-.4.96-.373.375-.933.374c-.56-.001-.684-.125-.933-.374q-.375-.373-.4-.96V12.44q0-.56.386-.947.387-.386.947-.386m8 0q.56 0 .933.373.375.374.4.96v1.173q-.025.586-.4.96-.373.375-.933.374c-.56-.001-.684-.125-.933-.374q-.375-.373-.4-.96V12.44q.025-.586.4-.96.373-.373.933-.373"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://weibo.com/u/6237206866" target="_blank" rel="noopener" title="weibo.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407 177.6c7.6-24-13.4-46.8-37.4-41.7-22 4.8-28.8-28.1-7.1-32.8 50.1-10.9 92.3 37.1 76.5 84.8-6.8 21.2-38.8 10.8-32-10.3M214.8 446.7C108.5 446.7 0 395.3 0 310.4c0-44.3 28-95.4 76.3-143.7C176 67 279.5 65.8 249.9 161c-4 13.1 12.3 5.7 12.3 6 79.5-33.6 140.5-16.8 114 51.4-3.7 9.4 1.1 10.9 8.3 13.1 135.7 42.3 34.8 215.2-169.7 215.2m143.7-146.3c-5.4-55.7-78.5-94-163.4-85.7-84.8 8.6-148.8 60.3-143.4 116s78.5 94 163.4 85.7c84.8-8.6 148.8-60.3 143.4-116M347.9 35.1c-25.9 5.6-16.8 43.7 8.3 38.3 72.3-15.2 134.8 52.8 111.7 124-7.4 24.2 29.1 37 37.4 12 31.9-99.8-55.1-195.9-157.4-174.3m-78.5 311c-17.1 38.8-66.8 60-109.1 46.3-40.8-13.1-58-53.4-40.3-89.7 17.7-35.4 63.1-55.4 103.4-45.1 42 10.8 63.1 50.2 46 88.5m-86.3-30c-12.9-5.4-30 .3-38 12.9-8.3 12.9-4.3 28 8.6 34 13.1 6 30.8.3 39.1-12.9 8-13.1 3.7-28.3-9.7-34m32.6-13.4c-5.1-1.7-11.4.6-14.3 5.4-2.9 5.1-1.4 10.6 3.7 12.9 5.1 2 11.7-.3 14.6-5.4 2.8-5.2 1.1-10.9-4-12.9"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.zhihu.com/people/xuan-xuan-42-18-81" target="_blank" rel="noopener" title="www.zhihu.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.721 0C2.251 0 0 2.25 0 5.719V18.28C0 21.751 2.252 24 5.721 24h12.56C21.751 24 24 21.75 24 18.281V5.72C24 2.249 21.75 0 18.281 0zm1.964 4.078q-.408 1.096-.68 2.11h4.587c.545-.006.445 1.168.445 1.171H9.384a58 58 0 0 1-.112 3.797h2.712c.388.023.393 1.251.393 1.266H9.183a9.2 9.2 0 0 1-.408 2.102l.757-.604c.452.456 1.512 1.712 1.906 2.177.473.681.063 2.081.063 2.081l-2.794-3.382c-.653 2.518-1.845 3.607-1.845 3.607-.523.468-1.58.82-2.64.516 2.218-1.73 3.44-3.917 3.667-6.497H4.491c0-.015.197-1.243.806-1.266h2.71c.024-.32.086-3.254.086-3.797H6.598c-.136.406-.158.447-.268.753-.594 1.095-1.603 1.122-1.907 1.155.906-1.821 1.416-3.6 1.591-4.064.425-1.124 1.671-1.125 1.671-1.125M13.078 6h6.377v11.33h-2.573l-2.184 1.373-.401-1.373h-1.219zm1.313 1.219v8.86h.623l.263.937 1.455-.938h1.456v-8.86z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://wiki.archlinuxcn.org/wiki/User:Messier81" target="_blank" rel="noopener" title="wiki.archlinuxcn.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2c-.89 2.18-1.43 3.61-2.42 5.73.61.64 1.35 1.39 2.56 2.24-1.3-.54-2.19-1.07-2.85-1.63C8 11 6.03 14.75 2 22c3.17-1.83 5.63-2.96 7.92-3.39-.1-.42-.16-.88-.15-1.36v-.1c.05-2.03 1.11-3.59 2.36-3.48 1.25.1 2.22 1.83 2.17 3.87-.01.38-.05.75-.12 1.09 2.26.44 4.69 1.56 7.82 3.37-.62-1.14-1.17-2.16-1.69-3.13-.81-.64-1.7-1.48-3.46-2.37 1.21.3 2.08.66 2.76 1.07C14.26 7.62 13.83 6.3 12 2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.instant", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>
